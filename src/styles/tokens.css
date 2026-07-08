@@ -157,6 +157,7 @@
   --color-icon-primary: #4864f1;
   --color-icon-disabled: rgba(158, 158, 161, 0.4);
   --color-icon-default: #212123;
+  --color-icon-placeholder: #bdbdc0;
   --color-surface-card: #f6f6f7;
 }
 
