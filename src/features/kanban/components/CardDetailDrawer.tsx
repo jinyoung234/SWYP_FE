@@ -347,7 +347,7 @@ export function CardDetailDrawer({
                     </button>
                     <button
                       type="button"
-                      aria-label="지원 내역 삭제"
+                      aria-label="지원 현황 삭제"
                       onClick={() =>
                         onDeleteCard({
                           id: detail.id,

@@ -393,7 +393,7 @@ export function KanbanBoard({ initialStages }: KanbanBoardProps) {
           },
         });
       },
-      onError: () => showToast('error', '지원 내역 삭제에 실패했어요.'),
+      onError: () => showToast('error', '지원 현황 삭제에 실패했어요.'),
     });
   }
 
@@ -627,7 +627,7 @@ export function KanbanBoard({ initialStages }: KanbanBoardProps) {
               const mapped = mapCardErrorCode(err.code);
               if (mapped) return mapped;
             }
-            showToast('error', '지원 내역 추가에 실패했어요.');
+            showToast('error', '지원 현황 추가에 실패했어요.');
             return undefined;
           }
         }}
@@ -668,7 +668,7 @@ export function KanbanBoard({ initialStages }: KanbanBoardProps) {
               }))
             );
             setEditingCard(null);
-            showToast('success', '지원 내역이 수정되었어요.');
+            showToast('success', '지원 현황이 수정되었어요.');
             return undefined;
           } catch (err) {
             if (err instanceof ApiClientError) {

@@ -159,7 +159,7 @@ export function AttachIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-// name="plus" — KanbanColumn "지원 내역 추가" 버튼에서 사용.
+// name="plus" — KanbanColumn "지원 현황 추가" 버튼에서 사용.
 export function PlusSmallIcon({ size = 16 }: { size?: number }) {
   return <Image src="/icons/plus.svg" alt="" width={size} height={size} />;
 }

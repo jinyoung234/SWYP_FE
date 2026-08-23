@@ -91,7 +91,7 @@ export function DeadlineList() {
       setToastMessage('수정 사항이 저장되었어요.');
     } catch {
       setToastType('error');
-      setToastMessage('지원 내역 수정에 실패했어요.');
+      setToastMessage('지원 현황 수정에 실패했어요.');
     }
   }
 
@@ -105,7 +105,7 @@ export function DeadlineList() {
       },
       onError: () => {
         setToastType('error');
-        setToastMessage('지원 내역 삭제에 실패했어요.');
+        setToastMessage('지원 현황 삭제에 실패했어요.');
       },
     });
   }
