@@ -152,29 +152,7 @@ export function EditDeadlineCardModal({
                 }`}
               >
                 <span>{deadlineText || '입력하지 않으면 상시채용으로 등록돼요.'}</span>
-                <span className="flex items-center gap-2">
-                  {deadlineText && (
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      aria-label="지원 마감일 지우기(상시채용으로 전환)"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setForm((prev) => ({ ...prev, deadline: null }));
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.stopPropagation();
-                          setForm((prev) => ({ ...prev, deadline: null }));
-                        }
-                      }}
-                      className="text-label-description hover:text-label-body"
-                    >
-                      <ClearIcon />
-                    </span>
-                  )}
-                  <CalendarIcon />
-                </span>
+                <CalendarIcon />
               </button>
               {showDatePicker && (
                 <div className="absolute bottom-[calc(100%+8px)] left-0 z-10">
@@ -242,14 +220,6 @@ export function EditDeadlineCardModal({
         </div>
       </div>
     </div>
-  );
-}
-
-function ClearIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
   );
 }
 
