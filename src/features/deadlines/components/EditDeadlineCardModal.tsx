@@ -141,6 +141,7 @@ export function EditDeadlineCardModal({
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
               <p className="text-3 font-semibold text-label-base">지원 마감일</p>
+              <p className="text-3 font-bold text-status-negative">*</p>
             </div>
             <div className="relative">
               <button
@@ -225,7 +226,17 @@ export function EditDeadlineCardModal({
 
         {/* 푸터 */}
         <div className="px-8">
-          <Button variant="primary" size="lg" onClick={handleConfirm} className="w-full">
+          {/*
+            지원 마감일 필수화 반영: 마감일을 고르지 않으면 확인 버튼을 비활성 상태로 유지한다.
+            (AddCardModal과 동일 규칙)
+          */}
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleConfirm}
+            disabled={form.deadline === null}
+            className="w-full"
+          >
             확인
           </Button>
         </div>

@@ -200,7 +200,10 @@ export function AddCardModal({
     },
   ];
 
-  const canSubmit = isFormValid && !isSubmitting;
+  // 지원 마감일 필수화(Figma 847:67278 — 라벨에 * 표시) 반영: 마감일을 고르지 않으면
+  // 확인 버튼을 비활성 상태로 유지한다. 마감일은 별도 에러 메시지 없이 버튼 비활성으로만
+  // 안내하므로 FormErrors에는 포함하지 않고 여기서만 검사한다.
+  const canSubmit = isFormValid && form.deadline !== null && !isSubmitting;
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center ${isOverDrawer ? 'z-[60]' : 'z-50'}`}>
@@ -242,6 +245,7 @@ export function AddCardModal({
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
               <p className="text-3 font-semibold text-label-base">지원 마감일</p>
+              <p className="text-3 font-bold text-status-negative">*</p>
             </div>
             <div className="relative">
               <button
