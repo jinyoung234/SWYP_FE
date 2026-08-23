@@ -146,7 +146,7 @@ export function DeadlineList() {
         isOpen={viewingCardId !== null}
         cardId={viewingCardId}
         onClose={() => setViewingCardId(null)}
-        onEditCard={() => {}}
+        onEditCard={(card) => setEditingCard(card)}
         onDeleteCard={(card) => setDeletingCard(card)}
       />
 
