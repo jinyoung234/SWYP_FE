@@ -23,6 +23,18 @@ import { ApiClientError } from '@/lib/api/api-client';
 import { isAlwaysHiring } from '@/lib/utils/deadline';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB (API 명세서 4.4.2 정책)
+const ALLOWED_FILE_EXTENSIONS = ['.pdf', '.docx', '.pptx'];
+
+// 파일 선택 즉시 검증한다 — 저장까지 갔다가 실패하는 헛걸음을 막기 위함.
+// 계정 저장 용량 초과처럼 서버만 알 수 있는 건 여기서 걸러지지 않는다.
+function validateFile(file: File): string | undefined {
+  const lowerName = file.name.toLowerCase();
+  if (!ALLOWED_FILE_EXTENSIONS.some((ext) => lowerName.endsWith(ext))) {
+    return 'PDF, DOCX, PPTX 파일만 첨부할 수 있어요.';
+  }
+  if (file.size > MAX_FILE_SIZE) return '파일 용량은 10MB를 초과할 수 없어요.';
+  return undefined;
+}
 
 function normalizeUrl(url: string): string {
   const trimmed = url.trim();
@@ -139,7 +151,6 @@ export function CardDetailDrawer({
   // URL 입력 슬롯 — 등록하면 비워지고 항목은 linkItems로 내려간다.
   const [slotCategory, setSlotCategory] = useState<UrlCategoryValue | null>(null);
   const [slotUrl, setSlotUrl] = useState('');
-  const [slotError, setSlotError] = useState<string | null>(null);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
 
@@ -181,7 +192,6 @@ export function CardDetailDrawer({
     setFileItems([]);
     setSlotCategory(null);
     setSlotUrl('');
-    setSlotError(null);
     setIsCategoryOpen(false);
     setFileError(null);
     setIsUnsavedModalOpen(false);
@@ -210,7 +220,11 @@ export function CardDetailDrawer({
 
   const isSaving = saveCardDetail.isPending;
   const canSave = isDirty && !isSaving;
-  const canRegisterUrl = slotUrl.trim().length > 0 && !isSaving;
+
+  // 입력할 때마다 즉시 검증한다(등록·저장을 기다리지 않음). 파생 값이라 항상 입력과 동기화된다.
+  // 빈 값은 검증 대상이 아니다 — 아직 입력하지 않은 슬롯에 에러가 뜨면 안 되기 때문.
+  const slotUrlError = slotUrl.trim() ? validateLinkFormat(slotUrl) : undefined;
+  const canRegisterUrl = slotUrl.trim().length > 0 && !slotUrlError && !isSaving;
 
   function handleRequestClose() {
     if (isDirty && !isSaving) {
@@ -248,12 +262,8 @@ export function CardDetailDrawer({
 
   // URL 슬롯 → 누적 리스트. 카테고리 미선택 시 기타(OTHER)로 저장된다.
   function handleRegisterUrl() {
+    // 형식 검증은 입력 중에 이미 끝나 있고, 실패하면 등록 자체가 비활성이다.
     if (!canRegisterUrl) return;
-    const validationError = validateLinkFormat(slotUrl);
-    if (validationError) {
-      setSlotError(validationError);
-      return;
-    }
     newItemSeq.current += 1;
     setLinkItems((prev) => [
       ...prev,
@@ -266,7 +276,6 @@ export function CardDetailDrawer({
     ]);
     setSlotCategory(null);
     setSlotUrl('');
-    setSlotError(null);
   }
 
   // 파일 슬롯 → 누적 리스트. 업로드는 하지 않고 목록에만 쌓아둔다(실제 전송은 "저장").
@@ -279,8 +288,9 @@ export function CardDetailDrawer({
       const file = input.files?.[0];
       if (!file) return;
 
-      if (file.size > MAX_FILE_SIZE) {
-        setFileError('파일 용량은 10MB를 초과할 수 없어요.');
+      const validationError = validateFile(file);
+      if (validationError) {
+        setFileError(validationError);
         return;
       }
 
@@ -539,22 +549,19 @@ export function CardDetailDrawer({
 
                     <div
                       className={`flex h-[45px] min-w-0 flex-1 items-center rounded-xl border bg-base-white px-5 py-4 ${
-                        slotError ? 'border-status-negative' : 'border-line-secondary'
+                        slotUrlError ? 'border-status-negative' : 'border-line-secondary'
                       }`}
                     >
                       <div className="flex min-h-[24px] min-w-0 flex-1 items-center gap-3">
                         <input
                           value={slotUrl}
                           disabled={isSaving}
-                          onChange={(e) => {
-                            setSlotUrl(e.target.value);
-                            setSlotError(null);
-                          }}
+                          onChange={(e) => setSlotUrl(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleRegisterUrl()}
                           placeholder="URL 링크를 입력해 주세요."
                           className="min-w-0 flex-1 bg-transparent text-3 font-medium text-label-base outline-none placeholder:text-label-placeholder disabled:cursor-not-allowed"
                         />
-                        {/* 입력값이 없으면 비활성. 활성 색은 Service/400, 밑줄 없음 (디자인 확정) */}
+                        {/* 값이 없거나 형식이 틀리면 비활성. 활성 색은 Service/400, 밑줄 없음 */}
                         <button
                           type="button"
                           onClick={handleRegisterUrl}
@@ -567,8 +574,8 @@ export function CardDetailDrawer({
                     </div>
                   </div>
 
-                  {slotError && (
-                    <p className="text-1 font-medium text-status-negative">{slotError}</p>
+                  {slotUrlError && (
+                    <p className="text-1 font-medium text-status-negative">{slotUrlError}</p>
                   )}
 
                   {linkItems.length > 0 && (
