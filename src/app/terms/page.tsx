@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/features/landing/components/Navbar';
 import { termsOfService } from '@/features/policy/data/terms-of-service';
-import { CookieBanner } from '@/components/policy/CookieBanner';
-import { ConsentModal } from '@/components/policy/ConsentModal';
+
 import { LegalDocument } from '@/features/policy/components/LegalDocument';
 
 export const metadata: Metadata = {
@@ -16,7 +15,6 @@ export default function TermsOfServicePage() {
     // Navbar가 fixed라 본문이 헤더 아래로 들어간다 → 헤더 높이(68px)만큼 밀어준다
     <main className="min-h-full bg-base-white pt-[68px]">
       <Navbar variant="default" />
-      <CookieBanner />
       {/* <ConsentModal isOpen onClose={() => {}} onConfirm={() => {}} /> */}
       <LegalDocument data={termsOfService} />
 
