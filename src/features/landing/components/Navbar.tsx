@@ -33,9 +33,17 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
   }, []);
 
   return (
+    // border-line-secondary를 분기 밖에 고정해 둔 이유:
+    // Tailwind v4 preflight는 `border: 0 solid`라 색을 지정하지 않으면 border-color가
+    // currentColor(전역 color 지정이 없어 검정)로 남는다. 분기 한쪽에만 색을 두면
+    // transition-all이 스크롤 임계값(12px) 근처에서 border-color를 검정 ↔ 회색으로
+    // 보간해 검정 선이 스친다. 색은 항상 같게 두고 굵기와 배경만 바뀌게 한다.
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? 'bg-white/75 backdrop-blur-xl border-b border-slate-200/70' : 'bg-transparent'
+      className={`fixed inset-x-0 top-0 z-50 border-line-secondary transition-all duration-500 ${
+        scrolled
+          ? 'border-b bg-white/75 backdrop-blur-xl'
+          : // 약관·처리방침 페이지는 배경이 흰색이라 최상단에서도 경계선이 있어야 헤더가 구분된다
+            `${isDefault ? 'border-b' : 'border-b-0'} bg-transparent`
       }`}
     >
       <nav className="mx-auto flex h-[68px] max-w-[1200px] items-center justify-between px-[24px]">
